@@ -5,6 +5,7 @@ namespace FlowDesk.Api.Domain.Entities;
 public class TicketAuditLog
 {
     public int Id { get; set; }
+    public Guid TenantId { get; set; }
     public int TicketId { get; set; }
     public Guid ChangedByUserId { get; set; }
     public TicketStatus OldStatus { get; set; }

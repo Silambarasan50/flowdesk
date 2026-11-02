@@ -100,6 +100,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Note).HasMaxLength(1000);
+            entity.HasIndex(a => new { a.TenantId, a.TicketId });
             entity.HasOne(a => a.Ticket)
                 .WithMany(t => t.AuditLogs)
                 .HasForeignKey(a => a.TicketId)
@@ -108,6 +109,7 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(a => a.ChangedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+            entity.HasQueryFilter(a => a.TenantId == _currentTenantService.TenantId);
         });
     }
 }

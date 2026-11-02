@@ -167,6 +167,9 @@ namespace FlowDesk.Api.Migrations
                     b.Property<int>("OldStatus")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
@@ -178,6 +181,8 @@ namespace FlowDesk.Api.Migrations
                     b.HasIndex("ChangedByUserId");
 
                     b.HasIndex("TicketId");
+
+                    b.HasIndex("TenantId", "TicketId");
 
                     b.ToTable("TicketAuditLogs");
                 });
