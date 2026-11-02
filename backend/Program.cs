@@ -11,7 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new UtcDateTimeConverter());
+    });
 builder.Services.AddOpenApi();
 builder.Services.AddHttpContextAccessor();
 
@@ -38,7 +41,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)),
+                Encoding.UTF8.GetBytes(
+                    jwtSettings["SecretKey"]
+                    ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured."))),
             NameClaimType = "name",
             RoleClaimType = "role"
         };
@@ -47,6 +52,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AgentOrAdmin", policy => policy.RequireRole("Admin", "Agent"))
     .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
+builder.Services.AddCors(options =>
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod()));
 
 var app = builder.Build();
 
@@ -63,6 +74,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
