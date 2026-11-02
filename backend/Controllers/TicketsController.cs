@@ -237,6 +237,56 @@ public class TicketsController : FlowDeskControllerBase
         return await GetTicket(id, cancellationToken);
     }
 
+    [HttpPatch("{id:int}/priority")]
+    [Authorize(Policy = "AgentOrAdmin")]
+    public async Task<ActionResult<TicketDetailDto>> UpdatePriority(
+        int id, UpdateTicketPriorityRequest request, CancellationToken cancellationToken)
+    {
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+
+        if (ticket is null)
+        {
+            return NotFound();
+        }
+
+        if (ticket.Priority == request.Priority)
+        {
+            return await GetTicket(id, cancellationToken);
+        }
+
+        var oldPriority = ticket.Priority;
+        var note = $"Priority changed from {oldPriority} to {request.Priority}.";
+        ticket.Priority = request.Priority;
+
+        var isOpen = ticket.Status != TicketStatus.Resolved && ticket.Status != TicketStatus.Closed;
+        if (isOpen)
+        {
+            try
+            {
+                await _slaEngine.ApplySlaPolicyAsync(ticket, cancellationToken);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            note += " SLA deadlines recalculated.";
+        }
+
+        _context.TicketAuditLogs.Add(new TicketAuditLog
+        {
+            TenantId = ticket.TenantId,
+            TicketId = ticket.Id,
+            ChangedByUserId = CurrentUserId,
+            OldStatus = ticket.Status,
+            NewStatus = ticket.Status,
+            Note = note,
+            TimestampUtc = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return await GetTicket(id, cancellationToken);
+    }
+
     private async Task<Ticket?> LoadTicketAsync(int id, CancellationToken cancellationToken)
         => await _context.Tickets
             .Include(t => t.CreatedByUser)

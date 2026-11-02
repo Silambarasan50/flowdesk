@@ -17,7 +17,7 @@ const STATUS_STYLES = {
   Closed: 'bg-slate-200 text-slate-600',
 };
 
-const STATUS_LABELS = {
+export const STATUS_LABELS = {
   New: 'New',
   Assigned: 'Assigned',
   InProgress: 'In Progress',

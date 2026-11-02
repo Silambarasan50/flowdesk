@@ -103,20 +103,20 @@ export default function LoginPage() {
           </div>
 
           <div className="grid gap-2">
-            {PERSONAS.map(({ label, email: personaEmail, icon: Icon, style }) => (
+            {PERSONAS.map((persona) => (
               <button
-                key={personaEmail}
+                key={persona.email}
                 type="button"
                 disabled={Boolean(busy)}
-                onClick={() => doLogin(personaEmail, 'Password123!', personaEmail)}
-                className={`flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60 ${style}`}
+                onClick={() => doLogin(persona.email, 'Password123!', persona.email)}
+                className={`flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60 ${persona.style}`}
               >
-                {busy === personaEmail ? (
+                {busy === persona.email ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Icon className="h-4 w-4" />
+                  <persona.icon className="h-4 w-4" />
                 )}
-                {label}
+                {persona.label}
               </button>
             ))}
           </div>

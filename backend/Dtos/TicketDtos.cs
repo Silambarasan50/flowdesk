@@ -15,6 +15,13 @@ public record UpdateTicketStatusRequest(
 public record AssignTicketRequest(
     [Required] Guid AgentId);
 
+public record UpdateTicketPriorityRequest(
+    [Required] TicketPriority Priority);
+
+public record AgentDto(
+    Guid Id,
+    string FullName);
+
 public record TicketSummaryDto(
     int Id,
     string TicketNumber,

@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Inbox, Loader2, PlusCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ChevronRight, Inbox, Loader2, PlusCircle } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { Avatar, PriorityPill, SlaBadge, StatusPill } from '../components/ticketUi';
 import { parseUtc } from '../utils/dates';
 
-export default function MyTicketsPage() {
+export default function CustomerTicketsPage() {
   const toast = useToast();
+  const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [now] = useState(Date.now());
@@ -62,11 +63,16 @@ export default function MyTicketsPage() {
                 <th className="px-4 py-3">SLA</th>
                 <th className="px-4 py-3">Agent</th>
                 <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {tickets.map((ticket) => (
-                <tr key={ticket.id} className="hover:bg-slate-50">
+                <tr
+                  key={ticket.id}
+                  onClick={() => navigate(`/tickets/${ticket.id}`)}
+                  className="cursor-pointer hover:bg-slate-50"
+                >
                   <td className="px-4 py-3">
                     <p className="text-xs font-bold text-slate-400">{ticket.ticketNumber}</p>
                     <p className="font-medium text-slate-800">{ticket.title}</p>
@@ -86,6 +92,9 @@ export default function MyTicketsPage() {
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500">
                     {parseUtc(ticket.createdAtUtc)?.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <ChevronRight className="ml-auto h-4 w-4 text-slate-300" />
                   </td>
                 </tr>
               ))}

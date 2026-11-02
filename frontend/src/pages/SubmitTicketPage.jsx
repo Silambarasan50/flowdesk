@@ -27,9 +27,9 @@ export default function SubmitTicketPage() {
     }
     setBusy(true);
     try {
-      await api.post('/tickets', { title: title.trim(), description: description.trim(), priority });
+      const { data } = await api.post('/tickets', { title: title.trim(), description: description.trim(), priority });
       toast.push('Ticket submitted — our team will pick it up shortly.', 'success');
-      navigate('/portal/tickets');
+      navigate(`/tickets/${data.id}`);
     } catch (error) {
       toast.push(error.response?.data?.message ?? 'Failed to submit ticket.', 'error');
     } finally {

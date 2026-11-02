@@ -49,13 +49,13 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        {CARDS.map(({ key, label, icon: Icon, style }) => (
-          <div key={key} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
-            <span className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${style}`}>
-              <Icon className="h-5 w-5 text-white" />
+        {CARDS.map((card) => (
+          <div key={card.key} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
+            <span className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${card.style}`}>
+              <card.icon className="h-5 w-5 text-white" />
             </span>
-            <p className="mt-3 text-3xl font-bold text-slate-900">{summary?.[key] ?? 0}</p>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+            <p className="mt-3 text-3xl font-bold text-slate-900">{summary?.[card.key] ?? 0}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{card.label}</p>
           </div>
         ))}
       </div>

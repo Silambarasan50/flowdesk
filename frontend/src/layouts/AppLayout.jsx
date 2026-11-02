@@ -56,10 +56,10 @@ export default function AppLayout() {
           <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
             {user?.role === 'Customer' ? 'Portal' : 'Workspace'}
           </p>
-          {navItems.map(({ to, label, icon: Icon }) => (
+          {navItems.map((item) => (
             <NavLink
-              key={to}
-              to={to}
+              key={item.to}
+              to={item.to}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
@@ -68,8 +68,8 @@ export default function AppLayout() {
                 }`
               }
             >
-              <Icon className="h-4 w-4" />
-              {label}
+              <item.icon className="h-4 w-4" />
+              {item.label}
             </NavLink>
           ))}
         </nav>

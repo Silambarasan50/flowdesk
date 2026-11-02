@@ -5,8 +5,9 @@ import AppLayout from './layouts/AppLayout';
 import LoginPage from './pages/LoginPage';
 import KanbanPage from './pages/KanbanPage';
 import AnalyticsPage from './pages/AnalyticsPage';
-import MyTicketsPage from './pages/MyTicketsPage';
+import CustomerTicketsPage from './pages/CustomerTicketsPage';
 import SubmitTicketPage from './pages/SubmitTicketPage';
+import TicketDetailPage from './pages/TicketDetailPage';
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -41,8 +42,9 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/portal/tickets" element={<MyTicketsPage />} />
+        <Route path="/portal/tickets" element={<CustomerTicketsPage />} />
         <Route path="/portal/submit" element={<SubmitTicketPage />} />
+        <Route path="/tickets/:id" element={<TicketDetailPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

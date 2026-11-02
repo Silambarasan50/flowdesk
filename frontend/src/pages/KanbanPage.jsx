@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { Loader2, RefreshCw, Search, UserX } from 'lucide-react';
 import api from '../api/axios';
@@ -44,6 +45,8 @@ function moveTicket(columns, ticketId, toStatus, toIndex) {
 
 export default function KanbanPage() {
   const toast = useToast();
+  const navigate = useNavigate();
+  const suppressClick = useRef(false);
   const [columns, setColumns] = useState(EMPTY_COLUMNS);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -68,6 +71,7 @@ export default function KanbanPage() {
   }, [loadBoard]);
 
   const onDragEnd = async (result) => {
+    suppressClick.current = true;
     const { source, destination, draggableId } = result;
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
@@ -167,7 +171,14 @@ export default function KanbanPage() {
                                 ref={dragProvided.innerRef}
                                 {...dragProvided.draggableProps}
                                 {...dragProvided.dragHandleProps}
-                                className={`rounded-lg border bg-white p-3 shadow-card transition-shadow ${
+                                onClick={() => {
+                                  if (suppressClick.current) {
+                                    suppressClick.current = false;
+                                    return;
+                                  }
+                                  navigate(`/tickets/${ticket.id}`);
+                                }}
+                                className={`cursor-pointer rounded-lg border bg-white p-3 shadow-card transition-shadow ${
                                   dragSnapshot.isDragging
                                     ? 'rotate-1 border-blue-300 shadow-lg'
                                     : 'border-slate-200 hover:border-slate-300'
