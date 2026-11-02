@@ -63,9 +63,22 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await dbContext.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(dbContext);
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        logger.LogInformation("Applying pending migrations...");
+        await context.Database.MigrateAsync();
+        logger.LogInformation("Migrations applied successfully. Seeding initial data...");
+        await DbSeeder.SeedAsync(context);
+        logger.LogInformation("Database seeded successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "FATAL: Database migration or seeding failed.");
+        throw; // Do not swallow exceptions silently during startup
+    }
 }
 
 if (app.Environment.IsDevelopment())
